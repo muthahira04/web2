@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Freelance Project Request Form</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -73,15 +74,21 @@
       font-size: 14px;
       color: #999;
     }
+
+    .error {
+      color: red;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <h1>Freelance Project Request Form</h1>
   <div class="form-container">
-    <form action="submit_form.php" method="post">
+    <form id="requestForm" action="submit_form.php" method="post">
       <div class="form-row">
         <label for="client_name">Your Name:</label>
         <input type="text" id="client_name" name="client_name" placeholder="Enter your full name" required>
+        <div id="nameError" class="error"></div>
       </div>
 
       <div class="form-row">
@@ -102,6 +109,7 @@
       <div class="form-row">
         <label for="budget">Budget (USD):</label>
         <input type="number" id="budget" name="budget" placeholder="Enter your budget" min="1" max="1000000" required>
+        <div id="budgetFeedback" class="error"></div>
       </div>
 
       <div class="form-row">
@@ -139,5 +147,43 @@
       </div>
     </form>
   </div>
+
+  <script>
+    $(document).ready(function () {
+      // Smooth scroll to the form on page load
+      $('html, body').animate({
+        scrollTop: $('.form-container').offset().top
+      }, 1000);
+
+      // Real-time budget validation
+      $('#budget').on('input', function () {
+        const budget = $(this).val();
+        if (budget < 50) {
+          $('#budgetFeedback').text('The budget seems too low for most projects.');
+        } else if (budget > 500000) {
+          $('#budgetFeedback').text('Consider breaking the project into smaller milestones.');
+        } else {
+          $('#budgetFeedback').text('');
+        }
+      });
+
+      // Name validation on blur
+      $('#client_name').on('blur', function () {
+        if (!$(this).val()) {
+          $('#nameError').text('Name is required.');
+        } else {
+          $('#nameError').text('');
+        }
+      });
+
+      // Form submission validation
+      $('#requestForm').on('submit', function (event) {
+        if (!$('#client_name').val()) {
+          event.preventDefault();
+          $('#nameError').text('Please fill out your name.');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
